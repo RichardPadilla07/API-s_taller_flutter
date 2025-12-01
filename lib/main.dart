@@ -86,7 +86,9 @@ class _PokemonScreenState extends State<PokemonScreen> {
   }
 
   Future<void> fetchPokemon() async {
-    setState(() { _isLoading = true; });
+    setState(() {
+      _isLoading = true;
+    });
 
     final url = Uri.parse('https://pokeapi.co/api/v2/pokemon?limit=50');
     try {
@@ -114,7 +116,9 @@ class _PokemonScreenState extends State<PokemonScreen> {
         });
       }
     } catch (e) {
-      setState(() { _isLoading = false; });
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
 
@@ -136,36 +140,56 @@ class _PokemonScreenState extends State<PokemonScreen> {
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         setState(() {
-          _searchedPokemon = {'name': data['name'], 'image': data['sprites']['front_default']};
+          _searchedPokemon = {
+            'name': data['name'],
+            'image': data['sprites']['front_default']
+          };
           _searchedDetails = data;
           _loadingDetails = false;
         });
       } else {
-        setState(() { _loadingDetails = false; });
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Pokemon no encontrado')));
+        setState(() {
+          _loadingDetails = false;
+        });
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text('Pokemon no encontrado')));
       }
     } catch (e) {
-      setState(() { _loadingDetails = false; });
+      setState(() {
+        _loadingDetails = false;
+      });
     }
   }
 
   void _toggleExpand(int index, String pokemonName) async {
     if (_expandedIndex == index) {
-      setState(() { _expandedIndex = null; _expandedDetails = null; });
+      setState(() {
+        _expandedIndex = null;
+        _expandedDetails = null;
+      });
       return;
     }
 
-    setState(() { _expandedIndex = index; _expandedDetails = null; _loadingDetails = true; });
+    setState(() {
+      _expandedIndex = index;
+      _expandedDetails = null;
+      _loadingDetails = true;
+    });
 
     try {
       final url = Uri.parse('https://pokeapi.co/api/v2/pokemon/$pokemonName');
       final response = await http.get(url);
 
       if (response.statusCode == 200) {
-        setState(() { _expandedDetails = json.decode(response.body); _loadingDetails = false; });
+        setState(() {
+          _expandedDetails = json.decode(response.body);
+          _loadingDetails = false;
+        });
       }
     } catch (e) {
-      setState(() { _loadingDetails = false; });
+      setState(() {
+        _loadingDetails = false;
+      });
     }
   }
 
@@ -177,9 +201,12 @@ class _PokemonScreenState extends State<PokemonScreen> {
     List tipos = data['types'];
     String tiposStr = tipos.map((t) => t['type']['name']).join(', ');
     List habilidades = data['abilities'];
-    String habilidadesStr = habilidades.map((a) => a['ability']['name']).join(', ');
+    String habilidadesStr =
+        habilidades.map((a) => a['ability']['name']).join(', ');
     List stats = data['stats'];
-    String statsStr = stats.map((s) => '  ' + s['stat']['name'] + ': ' + s['base_stat'].toString()).join('\n');
+    String statsStr = stats
+        .map((s) => '  ' + s['stat']['name'] + ': ' + s['base_stat'].toString())
+        .join('\n');
 
     return 'ID: $id\nAltura: ${(altura / 10)} m\nPeso: ${(peso / 10)} kg\nExp Base: $expBase\nTipos: $tiposStr\nHabilidades: $habilidadesStr\nEstadisticas:\n$statsStr';
   }
@@ -187,7 +214,10 @@ class _PokemonScreenState extends State<PokemonScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Pokemon API'), backgroundColor: Colors.red, foregroundColor: Colors.white),
+      appBar: AppBar(
+          title: Text('Pokemon API'),
+          backgroundColor: Colors.red,
+          foregroundColor: Colors.white),
       body: Column(
         children: [
           Padding(
@@ -197,12 +227,15 @@ class _PokemonScreenState extends State<PokemonScreen> {
                 Expanded(
                   child: TextField(
                     controller: _searchController,
-                    decoration: InputDecoration(hintText: 'Buscar Pokemon', border: OutlineInputBorder()),
+                    decoration: InputDecoration(
+                        hintText: 'Buscar Pokemon',
+                        border: OutlineInputBorder()),
                     onSubmitted: (_) => _searchPokemon(),
                   ),
                 ),
                 SizedBox(width: 8),
-                ElevatedButton(onPressed: _searchPokemon, child: Text('Buscar')),
+                ElevatedButton(
+                    onPressed: _searchPokemon, child: Text('Buscar')),
               ],
             ),
           ),
@@ -213,14 +246,25 @@ class _PokemonScreenState extends State<PokemonScreen> {
               child: Column(
                 children: [
                   ListTile(
-                    leading: _searchedPokemon!['image'] != null ? Image.network(_searchedPokemon!['image']) : Icon(Icons.image_not_supported),
-                    title: Text(_searchedPokemon!['name'].toString().toUpperCase()),
+                    leading: _searchedPokemon!['image'] != null
+                        ? Image.network(_searchedPokemon!['image'])
+                        : Icon(Icons.image_not_supported),
+                    title: Text(
+                        _searchedPokemon!['name'].toString().toUpperCase()),
                     subtitle: Text('Resultado de busqueda'),
-                    trailing: Icon(_searchExpanded ? Icons.expand_less : Icons.expand_more),
-                    onTap: () { setState(() { _searchExpanded = !_searchExpanded; }); },
+                    trailing: Icon(_searchExpanded
+                        ? Icons.expand_less
+                        : Icons.expand_more),
+                    onTap: () {
+                      setState(() {
+                        _searchExpanded = !_searchExpanded;
+                      });
+                    },
                   ),
                   if (_searchExpanded && _searchedDetails != null)
-                    Padding(padding: EdgeInsets.all(16), child: Text(_formatDetails(_searchedDetails!))),
+                    Padding(
+                        padding: EdgeInsets.all(16),
+                        child: Text(_formatDetails(_searchedDetails!))),
                 ],
               ),
             ),
@@ -233,19 +277,30 @@ class _PokemonScreenState extends State<PokemonScreen> {
                       final pokemon = _pokemonList[index];
                       bool isExpanded = _expandedIndex == index;
                       return Card(
-                        margin: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        margin:
+                            EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                         child: Column(
                           children: [
                             ListTile(
-                              leading: pokemon['image'] != null ? Image.network(pokemon['image']) : Icon(Icons.image_not_supported),
+                              leading: pokemon['image'] != null
+                                  ? Image.network(pokemon['image'])
+                                  : Icon(Icons.image_not_supported),
                               title: Text(pokemon['name']),
-                              trailing: Icon(isExpanded ? Icons.expand_less : Icons.expand_more),
-                              onTap: () => _toggleExpand(index, pokemon['name']),
+                              trailing: Icon(isExpanded
+                                  ? Icons.expand_less
+                                  : Icons.expand_more),
+                              onTap: () =>
+                                  _toggleExpand(index, pokemon['name']),
                             ),
                             if (isExpanded)
                               Padding(
                                 padding: EdgeInsets.all(16),
-                                child: _loadingDetails ? CircularProgressIndicator() : _expandedDetails != null ? Text(_formatDetails(_expandedDetails!)) : Text('Error al cargar'),
+                                child: _loadingDetails
+                                    ? CircularProgressIndicator()
+                                    : _expandedDetails != null
+                                        ? Text(
+                                            _formatDetails(_expandedDetails!))
+                                        : Text('Error al cargar'),
                               ),
                           ],
                         ),
@@ -267,12 +322,12 @@ class FlightsScreen extends StatefulWidget {
 
 class _FlightsScreenState extends State<FlightsScreen> {
   static const String _apiKey = 'a5cd0dce6da5f4621325362b316605f3';
-  
+
   List<dynamic> _flights = [];
   bool _isLoading = false;
   String? _errorMessage;
   final TextEditingController _searchController = TextEditingController();
-  
+
   int? _expandedIndex;
   bool _usingDemoData = false;
 
@@ -282,50 +337,134 @@ class _FlightsScreenState extends State<FlightsScreen> {
       'flight': {'iata': 'AA100', 'number': '100'},
       'airline': {'name': 'American Airlines', 'iata': 'AA'},
       'flight_status': 'active',
-      'departure': {'airport': 'John F Kennedy International', 'iata': 'JFK', 'scheduled': '2025-12-01T08:00:00+00:00', 'terminal': '8', 'gate': 'B22'},
-      'arrival': {'airport': 'Los Angeles International', 'iata': 'LAX', 'scheduled': '2025-12-01T11:30:00+00:00', 'terminal': '4', 'gate': 'A15'},
+      'departure': {
+        'airport': 'John F Kennedy International',
+        'iata': 'JFK',
+        'scheduled': '2025-12-01T08:00:00+00:00',
+        'terminal': '8',
+        'gate': 'B22'
+      },
+      'arrival': {
+        'airport': 'Los Angeles International',
+        'iata': 'LAX',
+        'scheduled': '2025-12-01T11:30:00+00:00',
+        'terminal': '4',
+        'gate': 'A15'
+      },
     },
     {
       'flight': {'iata': 'UA456', 'number': '456'},
       'airline': {'name': 'United Airlines', 'iata': 'UA'},
       'flight_status': 'scheduled',
-      'departure': {'airport': 'Chicago O Hare International', 'iata': 'ORD', 'scheduled': '2025-12-01T14:00:00+00:00', 'terminal': '1', 'gate': 'C12'},
-      'arrival': {'airport': 'Miami International', 'iata': 'MIA', 'scheduled': '2025-12-01T18:30:00+00:00', 'terminal': 'N', 'gate': 'D8'},
+      'departure': {
+        'airport': 'Chicago O Hare International',
+        'iata': 'ORD',
+        'scheduled': '2025-12-01T14:00:00+00:00',
+        'terminal': '1',
+        'gate': 'C12'
+      },
+      'arrival': {
+        'airport': 'Miami International',
+        'iata': 'MIA',
+        'scheduled': '2025-12-01T18:30:00+00:00',
+        'terminal': 'N',
+        'gate': 'D8'
+      },
     },
     {
       'flight': {'iata': 'DL789', 'number': '789'},
       'airline': {'name': 'Delta Air Lines', 'iata': 'DL'},
       'flight_status': 'landed',
-      'departure': {'airport': 'Hartsfield Jackson Atlanta International', 'iata': 'ATL', 'scheduled': '2025-12-01T06:00:00+00:00', 'terminal': 'S', 'gate': 'A10'},
-      'arrival': {'airport': 'Boston Logan International', 'iata': 'BOS', 'scheduled': '2025-12-01T09:15:00+00:00', 'terminal': 'A', 'gate': 'B5'},
+      'departure': {
+        'airport': 'Hartsfield Jackson Atlanta International',
+        'iata': 'ATL',
+        'scheduled': '2025-12-01T06:00:00+00:00',
+        'terminal': 'S',
+        'gate': 'A10'
+      },
+      'arrival': {
+        'airport': 'Boston Logan International',
+        'iata': 'BOS',
+        'scheduled': '2025-12-01T09:15:00+00:00',
+        'terminal': 'A',
+        'gate': 'B5'
+      },
     },
     {
       'flight': {'iata': 'SW321', 'number': '321'},
       'airline': {'name': 'Southwest Airlines', 'iata': 'SW'},
       'flight_status': 'delayed',
-      'departure': {'airport': 'Denver International', 'iata': 'DEN', 'scheduled': '2025-12-01T10:00:00+00:00', 'terminal': 'B', 'gate': 'B45'},
-      'arrival': {'airport': 'Phoenix Sky Harbor International', 'iata': 'PHX', 'scheduled': '2025-12-01T11:30:00+00:00', 'terminal': '4', 'gate': 'C3'},
+      'departure': {
+        'airport': 'Denver International',
+        'iata': 'DEN',
+        'scheduled': '2025-12-01T10:00:00+00:00',
+        'terminal': 'B',
+        'gate': 'B45'
+      },
+      'arrival': {
+        'airport': 'Phoenix Sky Harbor International',
+        'iata': 'PHX',
+        'scheduled': '2025-12-01T11:30:00+00:00',
+        'terminal': '4',
+        'gate': 'C3'
+      },
     },
     {
       'flight': {'iata': 'IB001', 'number': '001'},
       'airline': {'name': 'Iberia', 'iata': 'IB'},
       'flight_status': 'active',
-      'departure': {'airport': 'Madrid Barajas', 'iata': 'MAD', 'scheduled': '2025-12-01T10:30:00+00:00', 'terminal': '4', 'gate': 'K76'},
-      'arrival': {'airport': 'Mariscal Sucre International', 'iata': 'UIO', 'scheduled': '2025-12-01T15:45:00+00:00', 'terminal': '1', 'gate': 'A2'},
+      'departure': {
+        'airport': 'Madrid Barajas',
+        'iata': 'MAD',
+        'scheduled': '2025-12-01T10:30:00+00:00',
+        'terminal': '4',
+        'gate': 'K76'
+      },
+      'arrival': {
+        'airport': 'Mariscal Sucre International',
+        'iata': 'UIO',
+        'scheduled': '2025-12-01T15:45:00+00:00',
+        'terminal': '1',
+        'gate': 'A2'
+      },
     },
     {
       'flight': {'iata': 'AV123', 'number': '123'},
       'airline': {'name': 'Avianca', 'iata': 'AV'},
       'flight_status': 'scheduled',
-      'departure': {'airport': 'El Dorado International', 'iata': 'BOG', 'scheduled': '2025-12-01T16:00:00+00:00', 'terminal': '1', 'gate': 'B12'},
-      'arrival': {'airport': 'Mariscal Sucre International', 'iata': 'UIO', 'scheduled': '2025-12-01T17:30:00+00:00', 'terminal': '1', 'gate': 'A5'},
+      'departure': {
+        'airport': 'El Dorado International',
+        'iata': 'BOG',
+        'scheduled': '2025-12-01T16:00:00+00:00',
+        'terminal': '1',
+        'gate': 'B12'
+      },
+      'arrival': {
+        'airport': 'Mariscal Sucre International',
+        'iata': 'UIO',
+        'scheduled': '2025-12-01T17:30:00+00:00',
+        'terminal': '1',
+        'gate': 'A5'
+      },
     },
     {
       'flight': {'iata': 'LA800', 'number': '800'},
       'airline': {'name': 'LATAM Airlines', 'iata': 'LA'},
       'flight_status': 'cancelled',
-      'departure': {'airport': 'Mariscal Sucre International', 'iata': 'UIO', 'scheduled': '2025-12-01T08:00:00+00:00', 'terminal': '1', 'gate': 'A1'},
-      'arrival': {'airport': 'Jorge Chavez International', 'iata': 'LIM', 'scheduled': '2025-12-01T10:00:00+00:00', 'terminal': '1', 'gate': 'C10'},
+      'departure': {
+        'airport': 'Mariscal Sucre International',
+        'iata': 'UIO',
+        'scheduled': '2025-12-01T08:00:00+00:00',
+        'terminal': '1',
+        'gate': 'A1'
+      },
+      'arrival': {
+        'airport': 'Jorge Chavez International',
+        'iata': 'LIM',
+        'scheduled': '2025-12-01T10:00:00+00:00',
+        'terminal': '1',
+        'gate': 'C10'
+      },
     },
   ];
 
@@ -349,11 +488,12 @@ class _FlightsScreenState extends State<FlightsScreen> {
     });
 
     try {
-      String urlStr = 'http://api.aviationstack.com/v1/flights?access_key=$_apiKey&limit=50';
+      String urlStr =
+          'http://api.aviationstack.com/v1/flights?access_key=$_apiKey&limit=50';
       if (flightNumber != null && flightNumber.isNotEmpty) {
         urlStr += '&flight_iata=$flightNumber';
       }
-      
+
       final url = Uri.parse(urlStr);
       final response = await http.get(url);
 
@@ -366,20 +506,23 @@ class _FlightsScreenState extends State<FlightsScreen> {
           });
         } else {
           setState(() {
-            _errorMessage = data['error']?['message'] ?? 'Error al cargar vuelos';
+            _errorMessage =
+                data['error']?['message'] ?? 'Error al cargar vuelos';
             _isLoading = false;
           });
         }
       } else {
         // Si falla, mostrar opción de usar datos demo
         setState(() {
-          _errorMessage = 'La API de AviationStack no funciona en navegadores web (solo HTTP).\n\nPuedes usar datos de demostracion o ejecutar la app en Android/iOS.';
+          _errorMessage =
+              'La API de AviationStack no funciona en navegadores web (solo HTTP).\n\nPuedes usar datos de demostracion o ejecutar la app en Android/iOS.';
           _isLoading = false;
         });
       }
     } catch (e) {
       setState(() {
-        _errorMessage = 'Error de conexion.\n\nLa API gratuita no soporta HTTPS (requerido en web).\n\nUsa datos de demostracion o ejecuta en Android/iOS.';
+        _errorMessage =
+            'Error de conexion.\n\nLa API gratuita no soporta HTTPS (requerido en web).\n\nUsa datos de demostracion o ejecuta en Android/iOS.';
         _isLoading = false;
       });
     }
@@ -390,10 +533,17 @@ class _FlightsScreenState extends State<FlightsScreen> {
       _usingDemoData = true;
       _errorMessage = null;
       if (searchTerm != null && searchTerm.isNotEmpty) {
-        _flights = _demoFlights.where((f) => 
-          f['flight']['iata'].toString().toUpperCase().contains(searchTerm.toUpperCase()) ||
-          f['airline']['name'].toString().toUpperCase().contains(searchTerm.toUpperCase())
-        ).toList();
+        _flights = _demoFlights
+            .where((f) =>
+                f['flight']['iata']
+                    .toString()
+                    .toUpperCase()
+                    .contains(searchTerm.toUpperCase()) ||
+                f['airline']['name']
+                    .toString()
+                    .toUpperCase()
+                    .contains(searchTerm.toUpperCase()))
+            .toList();
       } else {
         _flights = List.from(_demoFlights);
       }
@@ -414,14 +564,14 @@ class _FlightsScreenState extends State<FlightsScreen> {
     String flightNumber = flight['flight']?['iata'] ?? 'N/A';
     String airline = flight['airline']?['name'] ?? 'N/A';
     String status = flight['flight_status'] ?? 'N/A';
-    
+
     // Salida
     String depAirport = flight['departure']?['airport'] ?? 'N/A';
     String depIata = flight['departure']?['iata'] ?? '';
     String depScheduled = flight['departure']?['scheduled'] ?? 'N/A';
     String depTerminal = flight['departure']?['terminal'] ?? 'N/A';
     String depGate = flight['departure']?['gate'] ?? 'N/A';
-    
+
     // Llegada
     String arrAirport = flight['arrival']?['airport'] ?? 'N/A';
     String arrIata = flight['arrival']?['iata'] ?? '';
@@ -499,7 +649,7 @@ LLEGADA:
               ],
             ),
           ),
-          
+
           // Boton para recargar
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 8),
@@ -527,7 +677,7 @@ LLEGADA:
               ],
             ),
           ),
-          
+
           if (_usingDemoData)
             Container(
               margin: EdgeInsets.all(8),
@@ -540,13 +690,14 @@ LLEGADA:
                 children: [
                   Icon(Icons.info, color: Colors.green[700]),
                   SizedBox(width: 8),
-                  Text('Usando datos de demostracion', style: TextStyle(color: Colors.green[700])),
+                  Text('Usando datos de demostracion',
+                      style: TextStyle(color: Colors.green[700])),
                 ],
               ),
             ),
-          
+
           SizedBox(height: 8),
-          
+
           // Lista de vuelos
           Expanded(
             child: _isLoading
@@ -560,7 +711,8 @@ LLEGADA:
                             SizedBox(height: 16),
                             Padding(
                               padding: EdgeInsets.all(16),
-                              child: Text(_errorMessage!, textAlign: TextAlign.center),
+                              child: Text(_errorMessage!,
+                                  textAlign: TextAlign.center),
                             ),
                             SizedBox(height: 8),
                             ElevatedButton.icon(
@@ -570,7 +722,8 @@ LLEGADA:
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.green,
                                 foregroundColor: Colors.white,
-                                padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 24, vertical: 12),
                               ),
                             ),
                             SizedBox(height: 8),
@@ -588,51 +741,71 @@ LLEGADA:
                             itemBuilder: (context, index) {
                               final flight = _flights[index];
                               bool isExpanded = _expandedIndex == index;
-                              
-                              String flightNum = flight['flight']?['iata'] ?? 'N/A';
-                              String airline = flight['airline']?['name'] ?? 'Desconocida';
+
+                              String flightNum =
+                                  flight['flight']?['iata'] ?? 'N/A';
+                              String airline =
+                                  flight['airline']?['name'] ?? 'Desconocida';
                               String status = flight['flight_status'] ?? 'N/A';
-                              String depIata = flight['departure']?['iata'] ?? '???';
-                              String arrIata = flight['arrival']?['iata'] ?? '???';
-                              
+                              String depIata =
+                                  flight['departure']?['iata'] ?? '???';
+                              String arrIata =
+                                  flight['arrival']?['iata'] ?? '???';
+
                               return Card(
-                                margin: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                margin: EdgeInsets.symmetric(
+                                    horizontal: 8, vertical: 4),
                                 child: Column(
                                   children: [
                                     ListTile(
-                                      leading: Icon(Icons.flight, color: Colors.indigo, size: 32),
+                                      leading: Icon(Icons.flight,
+                                          color: Colors.indigo, size: 32),
                                       title: Row(
                                         children: [
-                                          Text(flightNum, style: TextStyle(fontWeight: FontWeight.bold)),
+                                          Text(flightNum,
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold)),
                                           SizedBox(width: 8),
                                           Container(
-                                            padding: EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                                            padding: EdgeInsets.symmetric(
+                                                horizontal: 8, vertical: 2),
                                             decoration: BoxDecoration(
                                               color: _getStatusColor(status),
-                                              borderRadius: BorderRadius.circular(10),
+                                              borderRadius:
+                                                  BorderRadius.circular(10),
                                             ),
-                                            child: Text(status.toUpperCase(), style: TextStyle(color: Colors.white, fontSize: 10)),
+                                            child: Text(status.toUpperCase(),
+                                                style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontSize: 10)),
                                           ),
                                         ],
                                       ),
                                       subtitle: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
                                         children: [
                                           Text(airline),
-                                          Text('$depIata → $arrIata', style: TextStyle(fontWeight: FontWeight.bold)),
+                                          Text('$depIata → $arrIata',
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold)),
                                         ],
                                       ),
-                                      trailing: Icon(isExpanded ? Icons.expand_less : Icons.expand_more),
+                                      trailing: Icon(isExpanded
+                                          ? Icons.expand_less
+                                          : Icons.expand_more),
                                       onTap: () {
                                         setState(() {
-                                          _expandedIndex = isExpanded ? null : index;
+                                          _expandedIndex =
+                                              isExpanded ? null : index;
                                         });
                                       },
                                     ),
                                     if (isExpanded)
                                       Padding(
                                         padding: EdgeInsets.all(16),
-                                        child: Text(_formatFlightDetails(flight)),
+                                        child:
+                                            Text(_formatFlightDetails(flight)),
                                       ),
                                   ],
                                 ),
